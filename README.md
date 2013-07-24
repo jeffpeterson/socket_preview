@@ -4,9 +4,9 @@ Socket Preview
 Usage
 -----
 
-Start the server:
-
 ```bash
+git clone https://github.com/jeffpeterson/socket_preview.git
+cd socket_preview
 node app.js
 ```
 
