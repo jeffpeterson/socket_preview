@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Socket</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="/pure-min.css">
+    <link rel="stylesheet" href="/base.css" type="text/css" media="screen" charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="viewport" content="initial-scale=1">
+</head>
+<body>
+  <div class="center padding">
+    <a href="#" class="pure-button pure-button-primary" id="open-window">Open Window</a>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io.connect('/'),
+      target = null;
+    document.getElementById("open-window").onclick = function(event) {
+      event.preventDefault();
+      target = open("http://petersonj.com");
+    }
+
+    socket.on('navigate', function (data) {
+      console.log("Navigation to: " + data.url);
+      if (target) target.location.href = data.url;
+    });
+  </script>
+</body>
+</html>

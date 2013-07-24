@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Control Socket</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="/pure-min.css">
+    <link rel="stylesheet" href="/base.css" type="text/css" media="screen" charset="utf-8">
+</head>
+<body>
+  <div class="pure-g-r" id="container">
+    <div class="pure-u-1-4"></div>
+      <div class="pure-u-1-2">
+        <form class="pure-form pure-g" action="/control.html" method="get" accept-charset="utf-8" id='form'>
+          <div class="pure-u-3-4">
+            <div class="padding">
+              <input class="pure-input-1" type="text" name="url" value="" id="url" />
+            </div>
+          </div>
+          <div class="pure-u-1-4">
+            <div class="padding">
+              <input class="pure-button pure-primary-button pure-input-1" type="submit" value="Navigate" />
+            </div>
+          </div>
+        </form>
+        <div class="padding">
+          <div class="pure-menu pure-menu-open">
+            <div class="pure-menu-heading">Recents</div>
+            <ul id="recents"></ul>
+          </div>
+        </div>
+        <div class="pure-menu pure-menu-open pure-menu-horizontal padding">
+          <ul>
+            <li><a href="#" onclick="clear_recents()">Clear</a></li>
+            <li> <a href="/inline.html" target="_blank">View Inline</a></li>
+            <li> <a href="/" target="_blank">View Popup</a></li>
+          </ul>
+        </div>
+    </div>
+    <div class="pure-u-1-4"></div>
+  </div>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  if (!localStorage) localStorage = {}
+
+  function get(key, def) {
+    return JSON.parse(localStorage[key] || null) || def;
+  }
+
+  function set(key, value) {
+    localStorage[key] = JSON.stringify(value);
+    return value;
+  }
+
+  function recents(url) {
+    var recents = get('recents', {});
+    if (url && !recents[url]) {
+      recents[url] = true;
+      set('recents', recents);
+    }
+    return recents;
+  }
+
+  function clear_recents() {
+    set('recents', {});
+    $ul.innerHTML = "";
+    return false;
+  }
+  
+  var socket   = io.connect('/'),
+    $url       = document.getElementById('url'),
+    $ul        = document.getElementById('recents'),
+    $button    = document.getElementById('button');
+  
+  function parse(url) {
+    return url.match(/^https?:\/\//) ? url : "http://" + url;
+  }
+
+  function navigate(url) {
+    url = parse(url);
+    $url.value = url;
+
+    socket.emit('navigate', {url: url});
+    return false;
+  }
+
+  function addRecent(url) {
+    if (recents()[url]) return;
+
+    recents(url);
+    append(url);
+
+  }
+
+  function append(url) {
+    li = document.createElement("li");
+    a = document.createElement("a");
+    a.href = url;
+    a.onclick = function(e) {
+      return navigate(this.href);
+    }
+    a.innerHTML = url;
+    li.appendChild(a);
+    $ul.appendChild(li);
+  }
+
+  for (url in recents()) {
+    append(url);
+  }
+
+  socket.on('navigate', function(data) {
+    $url.value = data.url;
+    addRecent(data.url);
+  });
+
+  form.onsubmit = function(e) {
+    return navigate($url.value);
+  }
+</script>
+</body>
+</html>

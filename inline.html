@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Socket</title>
+    <meta charset="utf-8" />
+    <!-- <meta name="viewport" content="initial-scale=1"> -->
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="/base.css" type="text/css" media="screen" charset="utf-8">
+</head>
+<body>
+  <iframe id="iframe" src="" sandbox="allow-same-origin allow-forms allow-scripts"></iframe>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io.connect('/'),
+      iframe = document.getElementById('iframe');
+
+    socket.on('navigate', function (data) {
+      console.log("Navigation to: " + data.url);
+      iframe.src = data.url;
+    });
+  </script>
+</body>
+</html>
