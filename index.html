@@ -11,6 +11,7 @@
 <body>
   <div class="center padding">
     <a href="#" class="pure-button pure-button-primary" id="open-window">Open Window</a>
+    <a href="/inline.html" class="pure-button pure-button-primary">Open Inline</a>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
@@ -19,7 +20,7 @@
       target = null;
     document.getElementById("open-window").onclick = function(event) {
       event.preventDefault();
-      target = open("http://petersonj.com");
+      target = open("http://google.com");
     }
 
     socket.on('navigate', function (data) {
